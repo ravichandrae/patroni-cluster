@@ -8,11 +8,11 @@ In case of a disaster scenario, where the primary datacenter goes down, this mac
 
 To run this setup locally, execute the following commands
 
-1. docker-compose build
-2. docker-compose up -d
+* `docker-compose build` - This command will build the container images
+* `docker-compose up -d` - This command will run the containers
 
 After testing, if you want to shutdown the cluster, you can execute the following commands.
-1. docker-compose down
+* `docker-compose down` - Stop the running containers
 
 How to vertify the setup.
 
