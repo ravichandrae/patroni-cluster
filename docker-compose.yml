@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  etcd:
+    image: bitnami/etcd:latest
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_ENABLE_V2=true
+    ports:
+      - 2379:2379
+
+  haproxy:
+    image: haproxy:latest
+    ports:
+      - 5000:5000
+      - 5001:5001
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+
+  patroni1:
+    build: .
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - ./patroni1.yml:/etc/patroni.yml:ro
+      - patroni1_data:/var/lib/postgresql/data
+    user: postgres
+    depends_on:
+      - etcd
+
+  patroni2:
+    build: .
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - ./patroni2.yml:/etc/patroni.yml:ro
+      - patroni2_data:/var/lib/postgresql/data
+    user: postgres
+    depends_on:
+      - etcd
+
+  patroni_dr:
+    build: .
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - ./patroni_dr.yml:/etc/patroni.yml:ro
+      - patroni_dr_data:/var/lib/postgresql/data
+    user: postgres
+    depends_on:
+      - etcd
+
+volumes:
+  patroni1_data:
+  patroni2_data:
+  patroni_dr_data:
